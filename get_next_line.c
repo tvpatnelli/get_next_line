@@ -1,46 +1,65 @@
-/* ************************************************************************** */
+
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/01/04 13:24:46 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/01/07 13:13:02 by vpatnell         ###   ########.fr       */
+/*   Created: 2019/01/08 13:52:49 by vpatnell          #+#    #+#             */
+/*   Updated: 2019/01/15 15:35:02 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "libft.h"
+#include <stdio.h>
+
 
 
 int		get_next_line(const int fd, char **line)
 {
-	static char tmp[BUFF_SIZE];
+	char buff[BUFF_SIZE + 1];
+	char *tmp;
+	char *str;
+	int ret;
+	static char	 *rest;
 
-	while (read(fd, tmp , BUFF_SIZE) > 0)
-		if (ft_strchr(tmp, '\n') ? 1 : -1)
-				ft_strjoin(tmp , *line);
-
+	*line = ft_strnew(0);
+	tmp = ft_strchr(buff , '\n');
+	if (fd)
+	{
+		while ((ret = read(fd, buff , BUFF_SIZE)) > 0)
+		{
+			printf("\nbuff -> %s\n", buff);
+			if(tmp)
+			{
+				*tmp ='\0';
+				*line = ft_strjoin(*line, buff);
+				*buff = *tmp + 1;
+				printf("line -> %s", *line);
+				printf("buff??? -> %s\n", buff);
+				return (0);
+			}
+			else
+				*line = ft_strjoin(*line, buff);
+				printf("%s", *line);
+		}
+		return (1);
+	}
 	return (0);
 }
 
-int		main(int arc , char **arv)
+int		main(int arc, char **arv)
 {
-	int  fd;
-	char *line;
-if  (arc == 1)
-	fd =0;
-	else if (arc == 2)
-		fd = open(arv[1], O_RDONLY);
-	else 
-		return (-1);
+	int		fd;
+	char	*line;
+
+	fd = open(arv[1], O_RDONLY);
 	while (get_next_line(fd, &line) == 1)
 	{
-		ft_putendl(line);
-		free(line);
+		ft_putstr(line);
+			free(line);
 	}
-	if  (arc ==  2)
-		close (fd);
-return (0);
+	close(fd);
+	return (0);
 }
