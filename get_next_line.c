@@ -6,7 +6,7 @@
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 13:52:49 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/01/18 17:20:37 by vpatnell         ###   ########.fr       */
+/*   Updated: 2019/01/29 15:57:12 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,47 +14,73 @@
 #include "libft.h"
 #include <stdio.h>
 
-static char *chr_n(const int fd,char  *buff)
+static char		*joinandfree(char *tmp, char *buff)
 {
-	char *tmp;
-	char *str;
+	char *fraiche;
 
-	tmp = ft_strchr(buff, '\n');
-	str = ft_strnew(BUFF_SIZE);
+	if (!tmp || !buff)
+		return NULL;
+	if (tmp && !buff)
+		return (tmp);
+	if (!tmp && buff)
+		return (ft_strdup(buff));
+	if (!(fraiche = ft_strnew(ft_strlen(tmp) + ft_strlen(buff))))
+		return (NULL);
+	fraiche = ft_strcpy(fraiche, tmp);
+	fraiche = ft_strcat(fraiche, buff);
+	free(tmp);
+	return (fraiche);
+}
 
-	if (tmp)
-	{
-		*tmp = '\0';
-		str = ft_strjoin(str , buff);
-		*buff = *tmp + 1;
-	}
-	else
-		str = ft_strjoin(str , buff);
-	return (str);
+static char		*before_n(char *tmp, char *n)
+{
+	char *ret;
+
+	ret = ft_strsub(tmp, 0, n - tmp);
+	//ft_putstr(ret);
+	return (ret);
+}
+
+static char *buffrest(char *tmp, char *n)
+{
+	char *rest;
+
+	rest = NULL;
+	if (!tmp)
+		return NULL;
+	if (n + 1)
+		rest = ft_strdup (n + 1);
+	return (rest);
 }
 
 
 int		get_next_line(const int fd, char **line)
 {
-	static char buff[BUFF_SIZE + 1];
+	static char *tmp;
+	static char *n;
+	char buff[BUFF_SIZE + 1];
 	int ret;
 
-	/*ft_putstr("////////// value  ////////\n");
-	ft_putstr(buff);
-	ft_putstr("\n////////// ////////\n");*/
 	*line = ft_strnew(0);
+	tmp = ft_strnew(0);
 	if  (fd)
 	{
+		if ((tmp  = buffrest(tmp, n)) || *line)
+			return (1);
+
 		while ((ret = read(fd, buff , BUFF_SIZE)) > 0)
-			if (ret)
-			{
-				*line = ft_strjoin(*line, chr_n(fd, buff));
-				return (1);
-			}
-		else
-			return (0);
+		{		buff[ret] = '\0';
+			tmp = joinandfree(tmp , buff);
+			n = ft_strchr(tmp, '\n');
+
+			if (n != NULL)
+				break ;
+		}
+		*line = before_n(tmp, n);
+	//	if ((tmp  = buffrest(tmp, n)) || *line)
+		//	return (1);
 	}
-	return (0);
+	return ((ret == 0) ? 0 : -1);
 }
 
 
