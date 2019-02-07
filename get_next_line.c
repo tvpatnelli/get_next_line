@@ -6,7 +6,7 @@
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 13:52:49 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/01/29 15:57:12 by vpatnell         ###   ########.fr       */
+/*   Updated: 2019/02/07 12:40:22 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ static char		*before_n(char *tmp, char *n)
 	char *ret;
 
 	ret = ft_strsub(tmp, 0, n - tmp);
-	//ft_putstr(ret);
 	return (ret);
 }
 
@@ -53,7 +52,6 @@ static char *buffrest(char *tmp, char *n)
 	return (rest);
 }
 
-
 int		get_next_line(const int fd, char **line)
 {
 	static char *tmp;
@@ -62,41 +60,44 @@ int		get_next_line(const int fd, char **line)
 	int ret;
 
 	*line = ft_strnew(0);
-	tmp = ft_strnew(0);
-	if  (fd)
-	{
-		if ((tmp  = buffrest(tmp, n)) || *line)
-			return (1);
-
-		while ((ret = read(fd, buff , BUFF_SIZE)) > 0)
-		{		buff[ret] = '\0';
+	while ((ret = read(fd, buff , BUFF_SIZE)) > 0)
+		{
+			if (tmp == NULL)
+				tmp = ft_strnew(0);
+			buff[ret] = '\0';
 			tmp = joinandfree(tmp , buff);
 			n = ft_strchr(tmp, '\n');
-
 			if (n != NULL)
 				break ;
 		}
-		*line = before_n(tmp, n);
-	//	if ((tmp  = buffrest(tmp, n)) || *line)
-		//	return (1);
-	}
-	return ((ret == 0) ? 0 : -1);
-}
-
-
-int		main(int arc, char **arv)
-{
-	int		fd;
-	char	*line;
-	int count = 0;
-
-	fd = open(arv[1], O_RDONLY);
-	while (get_next_line(fd, &line) > 0)
+	while (n)
 	{
-		count++;
-		ft_putendl(line);
-			free(line);
+		*line = before_n(tmp, n);
+		tmp  = buffrest(tmp, n);
+		n = ft_strchr(tmp, '\n');
+	return (1);
 	}
-	close(fd);
-	return (0);
+		if (ret == 0)
+		{
+			*line = joinandfree(*line, tmp);
+			return (0);
+		}
+	return (ret > 0 ? 1 : -1);
 }
+
+	int		main(int arc, char **arv)
+	{
+		int		fd;
+		char	*line;
+		int count = 0;
+
+		fd = open(arv[1], O_RDONLY);
+		while (get_next_line(fd, &line) > 0)
+		{
+			count++;
+			ft_putendl(line);
+			free(line);
+		}
+		close(fd);
+		return (0);
+	}
