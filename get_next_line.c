@@ -1,25 +1,25 @@
-
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/01/08 13:52:49 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/02/07 12:40:22 by vpatnell         ###   ########.fr       */
+/*   Created: 2019/02/07 12:46:40 by vpatnell          #+#    #+#             */
+/*   Updated: 2019/02/14 11:14:49 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "libft.h"
-#include <stdio.h>
+
 
 static char		*joinandfree(char *tmp, char *buff)
 {
-	char *fraiche;
+	char		*fraiche;
 
 	if (!tmp || !buff)
-		return NULL;
+		return (NULL);
 	if (tmp && !buff)
 		return (tmp);
 	if (!tmp && buff)
@@ -34,70 +34,66 @@ static char		*joinandfree(char *tmp, char *buff)
 
 static char		*before_n(char *tmp, char *n)
 {
-	char *ret;
+	char		*ret;
 
 	ret = ft_strsub(tmp, 0, n - tmp);
 	return (ret);
 }
 
-static char *buffrest(char *tmp, char *n)
+static char		*buffrest(char *tmp, char *n)
 {
-	char *rest;
+	char		*rest;
 
 	rest = NULL;
 	if (!tmp)
-		return NULL;
+		return (NULL);
 	if (n + 1)
-		rest = ft_strdup (n + 1);
+		rest = ft_strdup(n + 1);
 	return (rest);
 }
 
-int		get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
 	static char *tmp;
 	static char *n;
-	char buff[BUFF_SIZE + 1];
-	int ret;
+	char		buff[BUFF_SIZE + 1];
+	int			ret;
 
 	*line = ft_strnew(0);
-	while ((ret = read(fd, buff , BUFF_SIZE)) > 0)
-		{
-			if (tmp == NULL)
-				tmp = ft_strnew(0);
-			buff[ret] = '\0';
-			tmp = joinandfree(tmp , buff);
-			n = ft_strchr(tmp, '\n');
-			if (n != NULL)
-				break ;
-		}
+	while ((ret = read(fd, buff, BUFF_SIZE)) > 0)
+	{
+		if (tmp == NULL)
+			tmp = ft_strnew(0);
+		buff[ret] = '\0';
+		tmp = joinandfree(tmp, buff);
+		if ((n = ft_strchr(tmp, '\n')) != NULL)
+			break ;
+	}
 	while (n)
 	{
 		*line = before_n(tmp, n);
-		tmp  = buffrest(tmp, n);
+		tmp = buffrest(tmp, n);
 		n = ft_strchr(tmp, '\n');
-	return (1);
+		return (1);
 	}
-		if (ret == 0)
-		{
-			*line = joinandfree(*line, tmp);
-			return (0);
-		}
-	return (ret > 0 ? 1 : -1);
+	if ((ret == 0 && tmp != NULL) ? *line = joinandfree(*line, tmp) : 0)
+		return (0);
+	return ((ret > 0) ? 1 : -1);
 }
 
-	int		main(int arc, char **arv)
-	{
-		int		fd;
-		char	*line;
-		int count = 0;
+int		main(int arc, char **arv)
+{
+	int		fd;
+	char	*line;
+	int count = 0;
 
-		fd = open(arv[1], O_RDONLY);
-		while (get_next_line(fd, &line) > 0)
-		{
-			count++;
-			ft_putendl(line);
-			free(line);
-		}
-		close(fd);
-		return (0);
+	fd = open(arv[1], O_RDONLY);
+	while (get_next_line(fd, &line) > 0)
+	{
+		count++;
+		ft_putendl(line);
+		free(line);
 	}
+	close(fd);
+	return (0);
+}
