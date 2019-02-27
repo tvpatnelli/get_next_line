@@ -6,12 +6,13 @@
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/07 12:46:40 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/02/14 11:14:49 by vpatnell         ###   ########.fr       */
+/*   Updated: 2019/02/27 13:57:00 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "libft.h"
+#include <stdio.h>
 
 
 static char		*joinandfree(char *tmp, char *buff)
@@ -47,6 +48,8 @@ static char		*buffrest(char *tmp, char *n)
 	rest = NULL;
 	if (!tmp)
 		return (NULL);
+	if (ft_strlen(n + 1) == 0)
+		return (NULL);
 	if (n + 1)
 		rest = ft_strdup(n + 1);
 	return (rest);
@@ -73,27 +76,17 @@ int				get_next_line(const int fd, char **line)
 	{
 		*line = before_n(tmp, n);
 		tmp = buffrest(tmp, n);
-		n = ft_strchr(tmp, '\n');
+		if (tmp != NULL)
+			n = ft_strchr(tmp, '\n');
+		else
+			n = NULL;
 		return (1);
 	}
 	if ((ret == 0 && tmp != NULL) ? *line = joinandfree(*line, tmp) : 0)
-		return (0);
-	return ((ret > 0) ? 1 : -1);
-}
-
-int		main(int arc, char **arv)
-{
-	int		fd;
-	char	*line;
-	int count = 0;
-
-	fd = open(arv[1], O_RDONLY);
-	while (get_next_line(fd, &line) > 0)
 	{
-		count++;
-		ft_putendl(line);
-		free(line);
+		free(tmp);
+		tmp = NULL;
+		return (1);
 	}
-	close(fd);
-	return (0);
+	return ((ret > 0) ? 1 : -1);
 }

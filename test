@@ -1,0 +1,12 @@
+
+bienvenue,
+
+« fd » signifie file descriptor, soit « descripteur de fichier ». Ce n'est qu'un identifiant à l'usage des routines du système et qui désigne le fichier sur lequel tu souhaites travailler. En substance, c'est même ici un simple nombre entier (autrement dit : un simple numéro).
+
+Donc, tu ne copies pas à proprement parler de données du fd : tu vas demander au système d'aller lire ces données pour toi et d'aller les déposer dans le buffer que tu auras prévu à cet effet. En ce sens, dès que la ligne while ((byt_read = read(fd, *line, BUFF_SIZE)) > 0) est exécutée, tes données sont déjà dans ton buffer. Ce buffer, tu l'as d'ailleurs alloué toi-même et tu as déposée son adresse dans un pointeur fourni par la routine appelante (via un « pointeur de pointeur » nommé line). Ce sera donc à cette routine de libérer ce buffer avec free() et il ne faudra pas oublier de le faire.
+
+Donc, a priori le ft_strncat(str_fd… est sans objet sauf s'il y a des clauses supplémentaires à ton exercices que l'on ne connaîtrait pas.
+
+Maintenant, effectivement, la seule chose que l'on demande de faire ici est de récupérer une « ligne », donc terminée soit par un retour à la ligne, soit par la fin du fichier (soit encore, éventuellement, par un '\0' si on considère que cela doit s'appliquer également aux fichiers). 
+
+La principale raison pour laquelle l'appel read() est généralement imbriqué dans un boucle while est qu'on ne peut pas savoir a priori combien de données il reste encore à lire ni quel va être leur contenu (sous-entendu : s'il s'y trouve un retour à la ligne ou pas). Ce que l'on fait donc en général est, comme cela se produit ici, d'utiliser un buffer interne de taille fixe, de demander la lecture d'un bloc de la taille de ce buffer. On boucle alors seulement si le nombre d'octets lus (nombre renvoyé par read()) est égal à la taille du buffer. Si elle est inférieure mais positive quand même, ou qu'elle est nulle, c'est que la fin du fichier a été atteinte.
