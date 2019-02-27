@@ -6,7 +6,7 @@
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/07 12:46:40 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/02/27 13:57:00 by vpatnell         ###   ########.fr       */
+/*   Updated: 2019/02/27 20:14:56 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int				get_next_line(const int fd, char **line)
 		if ((n = ft_strchr(tmp, '\n')) != NULL)
 			break ;
 	}
-	while (n)
+	if (n)
 	{
 		*line = before_n(tmp, n);
 		tmp = buffrest(tmp, n);
@@ -80,6 +80,8 @@ int				get_next_line(const int fd, char **line)
 			n = ft_strchr(tmp, '\n');
 		else
 			n = NULL;
+		free(tmp);
+		tmp = NULL;
 		return (1);
 	}
 	if ((ret == 0 && tmp != NULL) ? *line = joinandfree(*line, tmp) : 0)
@@ -88,5 +90,5 @@ int				get_next_line(const int fd, char **line)
 		tmp = NULL;
 		return (1);
 	}
-	return ((ret > 0) ? 1 : -1);
+	return ((ret != 0) ? -1 : 0);
 }

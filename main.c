@@ -9,7 +9,7 @@ int		main(int arc, char **arv)
 	int count = 0;
 
 	fd = open(arv[1], O_RDONLY);
-	while (get_next_line(fd, &line) > 0)
+	while (get_next_line(fd, &line))
 	{
 		count++;
 		ft_putendl(line);
