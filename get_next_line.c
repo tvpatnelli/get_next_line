@@ -6,7 +6,7 @@
 /*   By: vpatnell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/07 12:46:40 by vpatnell          #+#    #+#             */
-/*   Updated: 2019/02/27 20:14:56 by vpatnell         ###   ########.fr       */
+/*   Updated: 2019/02/27 20:35:26 by vpatnell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,17 @@ static char		*buffrest(char *tmp, char *n)
 	return (rest);
 }
 
+int				gagne_ligne(char **n, char **line, char **tmp)
+{
+	*line = before_n(*tmp, *n);
+	*tmp = buffrest(*tmp, *n);
+	if (*tmp != NULL)
+		*n = ft_strchr(*tmp, '\n');
+	else
+		*n = NULL;
+	return (1);
+}
+
 int				get_next_line(const int fd, char **line)
 {
 	static char *tmp;
@@ -73,22 +84,13 @@ int				get_next_line(const int fd, char **line)
 			break ;
 	}
 	if (n)
-	{
-		*line = before_n(tmp, n);
-		tmp = buffrest(tmp, n);
-		if (tmp != NULL)
-			n = ft_strchr(tmp, '\n');
-		else
-			n = NULL;
-		free(tmp);
-		tmp = NULL;
-		return (1);
-	}
+		return (gagne_ligne(&n, line, &tmp));
 	if ((ret == 0 && tmp != NULL) ? *line = joinandfree(*line, tmp) : 0)
 	{
 		free(tmp);
 		tmp = NULL;
 		return (1);
 	}
-	return ((ret != 0) ? -1 : 0);
+	return (ret != 0 ? -1 : 0);
 }
+
