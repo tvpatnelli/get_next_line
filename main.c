@@ -1,20 +1,18 @@
-#include "get_next_line.h"
-#include "libft.h"
 #include <stdio.h>
-
-int		main(int arc, char **arv)
+#include <fcntl.h>
+#include "get_next_line.h"
+#include <stdlib.h>
+int main(int argc, char **argv)
 {
-	int		fd;
-	char	*line;
-	int count = 0;
 
-	fd = open(arv[1], O_RDONLY);
-	while (get_next_line(fd, &line))
-	{
-		count++;
-		ft_putendl(line);
-		free(line);
-	}
-	close(fd);
-	return (0);
+int	fd;
+char	*line;
+
+fd = open(argv[1], O_RDONLY);
+while (get_next_line(fd, &line) > 0)
+{
+	printf("%s\n", line);
+	free(line);
+}
+return (0);
 }
